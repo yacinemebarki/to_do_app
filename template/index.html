@@ -21,13 +21,41 @@
         </div>
         <div class="lists">
             <div class="to-day-list">
-
+                <div class="info">
+                    <h2 class="title">to day list</h2>"
+                    <div class="his-title">title</div>
+                    <div class="his-time">time</div>
+                    <div class="status">did</div>                    
+                </div>
             </div>
             <div class="to-do-list">
-            
+                <div class="info">
+                    <h2 class="title">to do list</h2>
+                    <div class="his-title">title</div>
+                    <div class="his-time">time</div> 
+                    <div class="status">did</div>                  
+                </div> 
+                <div class="add-task" id="add-task">          
+                    <label>
+                        <input type="checkbox" class="check" id="check">
+                        task finished
+                    </label>
+                    <input class="task-title" id="task-title" placeholder="enter title">
+                    <textarea id="description" name="description" rows="5" cols="40" placeholder="enter description"></textarea>
+                    <label for="meeting">Choose date and time:</label>
+                    <input type="datetime-local" id="meeting" name="meeting">
+                    <button class="save-btn" id="save-btn">save</button>
+                    <button class="edit-btn" id="edit-btn">edit</button>
+                </div>
+                <button class="add-btn" id="add-btn">add task</button>
             </div>
             <div class="time-end">
-
+                <div class="info">
+                    <h2 class="title">ended list</h2>"
+                    <div class="his-title">title</div>
+                    <div class="his-time">time</div>
+                    <div class="status">did</div>
+                </div>
             </div>
         </div>
     </div>
