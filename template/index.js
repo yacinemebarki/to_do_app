@@ -8,5 +8,9 @@ add_button.addEventListener("click", () => {
 });
 
 save_btn.addEventListener("click", () =>{
+    const title = document.getElementById("task-title")
+    const des = document.getElementById("description")
+    const time = document.getElementById("meeting")
+
     frame.style.display = "none"
 })
