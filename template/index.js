@@ -2,10 +2,7 @@ const add_button = document.getElementById("add-btn")
 const frame = document.getElementById("add-task")
 const save_btn = document.getElementById("save-btn")
 const edit_btn = document.getElementById("edit-btn")
-
-var titme_label = document.getElementById("his-time")
-var title_label = document.getElementById("his-title")
-var status_label = document.getElementById("status")
+const todo_list = document.getElementById("to-do-list")
 
 add_button.addEventListener("click", () => {
     frame.style.display = "block"
@@ -20,8 +17,7 @@ function showError(mes){
     })
 }
 
-showError("hello")
-save_btn.addEventListener("click", () =>{
+save_btn.addEventListener("click", () => {
     var title = document.getElementById("task-title").value.trim()
     var des = document.getElementById("description").value.trim()
     var time = document.getElementById("meeting").value.trim()
@@ -30,18 +26,34 @@ save_btn.addEventListener("click", () =>{
         showError("you must fill all fields")
         return
     }
-    titme_label.innerText = time
-    title_label.innerText = title
+    const task = document.createElement("div")
+    task.className = "info"
 
-    if(status == true){
-        status_label.innerText = "did"
-        status_label.style.backgroundColor = "#155724"
-    }
-    else{
-        status_label.innerText = "not did"
-        status_label.style.backgroundColor = "#571515"       
-    }
+    task.innerHTML = `
+        <div class="his-title">${title}</div>
+        <div class="his-time">${time}</div>
+        <div class="status" style="background-color:${status ? "#d4edda" : "#571515"}">
+            ${status ? "did" : "not did"}
+        </div>
+    `;
+    todo_list.insertBefore(task, frame)
 
 
     frame.style.display = "none"
+})
+
+const task = document.getElementById("info")
+
+task.addEventListener("click", () => {
+    const taskTitle = task.querySelector(".his-title").innerText;
+    const taskTime = task.querySelector(".his-time").innerText;
+    const taskStatus = task.querySelector(".status").innerText;
+
+    var title = document.getElementById("task-title")
+    var des = document.getElementById("description")
+    var time = document.getElementById("meeting")
+    var status = document.getElementById("check")
+
+    title.innerText = taskTitle
+
 })

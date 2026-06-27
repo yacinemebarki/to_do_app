@@ -133,8 +133,7 @@ body{
 .check {
     margin-right: 8px;
 }
-.save-btn,
-.edit-btn {
+.save-btn, .remove-btn{
     padding: 12px;
     border: none;
     border-radius: 8px;
@@ -153,14 +152,14 @@ body{
 .save-btn:active{
     background-color: #15a643;
 }
-.edit-btn {
+.remove-btn {
     background: #00b894;
 }
 
-.edit-btn:hover {
+.remove-btn:hover {
     background: #00997a;
 }
-.edit-btn:active{
+.remove-btn:active{
     background-color: #15a643;
 }
 .add-btn{
