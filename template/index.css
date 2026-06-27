@@ -77,6 +77,7 @@ body{
     border-radius: 30px;
     background-color: rgba(6, 10, 140, 0.12);
     margin: 5px;
+    cursor: pointer;
 }
 .to-day-list:hover{
     transform: scale(1.005);
@@ -180,4 +181,18 @@ body{
 }
 .add-btn:active{
     background-color: #15a643;
+}
+.error-message {
+    display: none;
+    justify-content: center;   
+    align-items: center;       
+    width: fit-content;      
+    margin: 20px auto;        
+    border: 1px solid #c4110e;
+    border-radius: 10px;
+    background-color: #e97270;
+    cursor: pointer;
+    padding: 10px 100px;
+    font-size: 20px;
+    color: #fff;
 }
