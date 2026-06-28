@@ -18,7 +18,7 @@ function validTime(){
 
 add_button.addEventListener("click", () => {
     frame.style.display = "block"
-});
+})
 
 function showError(mes){
     const error_div = document.getElementById("error-message")
@@ -90,7 +90,7 @@ todo_list.addEventListener("click", (e) => {
             task.remove();
         }
     })
-});
+})
 
 const remove_btn = document.getElementById("remove-btn")
 
