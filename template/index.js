@@ -30,9 +30,10 @@ save_btn.addEventListener("click", () => {
     task.className = "info"
 
     task.innerHTML = `
-        <div class="his-title">${title}</div>
-        <div class="his-time">${time}</div>
-        <div class="status" style="background-color:${status ? "#d4edda" : "#571515"}">
+        <div class="his-title" id="his-title">${title}</div>
+        <div class="his-time" id="his-time">${time}</div>
+        <div class="his-des" id="his-des">${des}</div>
+        <div class="status" id="status" style="background-color:${status ? "#d4edda" : "#571515"}">
             ${status ? "did" : "not did"}
         </div>
     `;
@@ -42,18 +43,27 @@ save_btn.addEventListener("click", () => {
     frame.style.display = "none"
 })
 
-const task = document.getElementById("info")
+todo_list.addEventListener("click", (e) => {
+    const task = e.target.closest(".info");
 
-task.addEventListener("click", () => {
-    const taskTitle = task.querySelector(".his-title").innerText;
-    const taskTime = task.querySelector(".his-time").innerText;
-    const taskStatus = task.querySelector(".status").innerText;
+    if (!task) return;
 
-    var title = document.getElementById("task-title")
-    var des = document.getElementById("description")
-    var time = document.getElementById("meeting")
-    var status = document.getElementById("check")
+    const task_title = task.querySelector(".his-title").innerText
+    const task_des = task.querySelector(".his-des").innerText
+    const task_time = task.querySelector(".his-time").innerText
+    const task_status = task.querySelector(".status").innerText
 
-    title.innerText = taskTitle
+    document.getElementById("task-title").value = task_title
+    document.getElementById("description").value = task_des
+    document.getElementById("meeting").value = task_time
+    document.getElementById("check").checked = task_status === "did"
 
+    frame.style.display = "block"
+    task.remove()
 })
+
+const remove_btn = document.getElementById("remove-btn")
+
+remove_btn.addEventListener("click", () => {
+    frame.style.display = "none"
+});
