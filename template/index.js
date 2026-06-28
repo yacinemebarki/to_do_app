@@ -3,6 +3,7 @@ const frame = document.getElementById("add-task")
 const save_btn = document.getElementById("save-btn")
 const edit_btn = document.getElementById("edit-btn")
 const todo_list = document.getElementById("to-do-list")
+const today_list = document.getElementById("to-day-list")
 
 const meeting = document.getElementById("meeting")
 function validTime(){
@@ -40,6 +41,7 @@ save_btn.addEventListener("click", () => {
         return
     }
 
+    const selectedTime = new Date(time) 
     const minTime = new Date();
     minTime.setHours(minTime.getHours() + 2);
 
@@ -58,31 +60,37 @@ save_btn.addEventListener("click", () => {
         <div class="status" id="status" style="background-color:${status ? "#d4edda" : "#571515"}">
             ${status ? "did" : "not did"}
         </div>
-    `;
+    `
     todo_list.insertBefore(task, frame)
+
+    if(selectedTime.getFullYear() === minTime.getFullYear() && selectedTime.getMonth() === minTime.getMonth() && selectedTime.getDate() === minTime.getDate()){
+        today_list.appendChild(task.cloneNode(true))
+    }
 
 
     frame.style.display = "none"
+    task = null
 })
 
 todo_list.addEventListener("click", (e) => {
-    const task = e.target.closest(".info");
+    const editingTask = e.target.closest(".info");
 
-    if (!task) return;
+    if (!editingTask) return;
 
-    const task_title = task.querySelector(".his-title").innerText
-    const task_des = task.querySelector(".his-des").innerText
-    const task_time = task.querySelector(".his-time").innerText
-    const task_status = task.querySelector(".status").innerText
+    const time = editingTask.querySelector(".his-time").innerText;
 
-    document.getElementById("task-title").value = task_title
-    document.getElementById("description").value = task_des
-    document.getElementById("meeting").value = task_time
-    document.getElementById("check").checked = task_status === "did"
+    document.getElementById("task-title").value = editingTask.querySelector(".his-title").innerText;
+    document.getElementById("description").value = editingTask.querySelector(".his-des").innerText;
+    document.getElementById("meeting").value = time
+    document.getElementById("check").checked = editingTask.querySelector(".status").innerText === "did";
 
-    frame.style.display = "block"
-    task.remove()
-})
+    frame.style.display = "block";
+    document.querySelectorAll(".info").forEach(task => {
+        if (task.querySelector(".his-time").innerText === time) {
+            task.remove();
+        }
+    })
+});
 
 const remove_btn = document.getElementById("remove-btn")
 
