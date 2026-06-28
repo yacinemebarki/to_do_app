@@ -4,6 +4,17 @@ const save_btn = document.getElementById("save-btn")
 const edit_btn = document.getElementById("edit-btn")
 const todo_list = document.getElementById("to-do-list")
 
+const meeting = document.getElementById("meeting")
+function validTime(){
+    const now = new Date()
+
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
+    meeting.min = now.toISOString().slice(0, 16)
+    console.log(meeting.min);
+    console.log(meeting.value);
+}
+
+
 add_button.addEventListener("click", () => {
     frame.style.display = "block"
 });
@@ -18,6 +29,8 @@ function showError(mes){
 }
 
 save_btn.addEventListener("click", () => {
+    validTime()
+
     var title = document.getElementById("task-title").value.trim()
     var des = document.getElementById("description").value.trim()
     var time = document.getElementById("meeting").value.trim()
@@ -26,6 +39,15 @@ save_btn.addEventListener("click", () => {
         showError("you must fill all fields")
         return
     }
+
+    const minTime = new Date();
+    minTime.setHours(minTime.getHours() + 2);
+
+    if (selectedTime < minTime) {
+        showError("The meeting must be at least 2 hours from now.");
+        return;
+    }
+
     const task = document.createElement("div")
     task.className = "info"
 
@@ -66,4 +88,4 @@ const remove_btn = document.getElementById("remove-btn")
 
 remove_btn.addEventListener("click", () => {
     frame.style.display = "none"
-});
+})
