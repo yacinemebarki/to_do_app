@@ -13,6 +13,13 @@ const user_schema = new mongo.Schema({
     password: {
         type: String,
         required: true
+    },
+    point: {
+        type: Number,
+        required: true
+    },
+    image: {
+        type: String
     }
 }, {
     timestamps: true

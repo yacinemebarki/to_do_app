@@ -1,0 +1,90 @@
+body{
+    background-color: #fcf7fc;
+    justify-content: center;
+    justify-items: center;
+    margin-top: 100px;
+}
+.container{
+    display: block;
+    background-color: #ffffff;
+    justify-content: center;
+    justify-items: center;
+    margin: 10px;
+    border: solid #ffffff;
+    border-radius: 14px;
+    height: 400px;
+    overflow: hidden;
+}
+.title{
+    font-weight: bold;
+    font-size: 28px;
+    letter-spacing: normal;
+    color: #41014f; 
+    text-align: center;
+}
+.sign-in,.sign-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 400px;
+    gap: 20px;
+}
+.sign-up {
+    display: none;
+}
+.input{
+    display: flex;
+    flex-direction: column;    
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.input-box{
+    background-color: #f4f2f2;
+    border: 1px solid #d1d5db;
+    border-radius: 1px;
+    width: 200px;
+    height: 35px;
+}
+.btn{
+    border: #41014f;
+    border-radius: 20px;
+    width: 150px;
+    height: 40px;
+    background-color: #41014f;
+    color: #ffffff;
+    font-weight: 25px;
+    cursor: pointer;
+}
+.btn:hover{
+    background-color: #750691;
+    transform: scale(1.05);
+}
+.btn:active{
+    background-color: #331e38;
+}
+.change{
+    display: flex;
+    flex-direction: column;
+    background: rgb(7, 137, 142);
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-sizing: border-box;
+}
+.message{
+    font-weight: bold;
+    font-size: 22px;
+}
+.input,.change {
+    width: 100%;
+    height: 100%;
+}
+.new,.oldm.input,.change {
+    width: 100%;
+    height: 100%;
+}
