@@ -1,8 +1,12 @@
+const { response } = require("express")
+
 const sign_in =  document.getElementById("sign-in")
 const sign_up = document.getElementById("sign-up")
-const in_btn = document.getElementById("up-to-in-btn")
-const up_btn = document.getElementById("in-to-up-btn")
+const up_to_in_btn = document.getElementById("up-to-in-btn")
+const in_to_up_btn = document.getElementById("in-to-up-btn")
 const error_div = document.getElementById("error-message")
+const in_btn = document.getElementById("in-btn")
+const up_btn = document.getElementById("up-btn")
 
 function showError(mes){
     const error_div = document.getElementById("error-message")
@@ -27,13 +31,36 @@ function switch_from_to(hide, show){
     },400)
 }
 
-in_btn.addEventListener("click", () => {
+up_to_in_btn.addEventListener("click", () => {
     showError("hallo")
     switch_from_to(sign_up, sign_in);
-});
+})
 
-up_btn.addEventListener("click", () => {
+in_to_up_btn.addEventListener("click", () => {
     switch_from_to(sign_in, sign_up);
-});
+})
+
+in_btn.addEventListener("click", async () => {
+    const email = document.getElementById("email").value 
+    const password = document.getElementById("password").value
+
+    const reponse = await fetch("/sign_in",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email,
+            password
+        })
+    })
+    const data = await response.json()
+    showError(data.message)
+    if(data.success){
+        window.location.href = "index.html"
+    }
+})
+
+
 
 
