@@ -1,5 +1,3 @@
-const { response } = require("express")
-
 const sign_in =  document.getElementById("sign-in")
 const sign_up = document.getElementById("sign-up")
 const up_to_in_btn = document.getElementById("up-to-in-btn")
@@ -32,7 +30,6 @@ function switch_from_to(hide, show){
 }
 
 up_to_in_btn.addEventListener("click", () => {
-    showError("hallo")
     switch_from_to(sign_up, sign_in);
 })
 
@@ -43,6 +40,11 @@ in_to_up_btn.addEventListener("click", () => {
 in_btn.addEventListener("click", async () => {
     const email = document.getElementById("email").value 
     const password = document.getElementById("password").value
+
+    if(email === "" || password === ""){
+        showError("you should fill all fields")
+        return;
+    }
 
     const reponse = await fetch("/sign_in",{
         method: "POST",
@@ -60,6 +62,37 @@ in_btn.addEventListener("click", async () => {
         window.location.href = "index.html"
     }
 })
+
+up_btn.addEventListener("click", async () =>{
+    const email = document.getElementById("email").value 
+    const password = document.getElementById("enter-password").value 
+    const repeat_password = document.getElementById("confirm-password").value 
+    const user_name = document.getElementById("user-name").value
+
+    if(email === "" || password === "" || repeat_password === "" || user_name === ""){
+        showError("you should fill all fields")
+        return;
+    }
+    if(password != repeat_password){
+        showError("you should enter the same password")
+        return
+    }
+
+    const response = await fetch("/sign_up",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            password: password,
+            email: email,
+            user_name: user_name
+        })
+    })
+
+    const data = await response.json()
+})
+
 
 
 
