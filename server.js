@@ -9,6 +9,16 @@ const mailer = require("nodemailer")
 const User = require("./model/user")
 const Task = require("./model/task")
 
+const app = express()
+app.use(express.static("template", {
+    index: false
+}))
+app.use(express.json())
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "template", "main.html"))
+})
+
 const transporter = mailer.createTransport({
     service: "gmail",
     auth:{
@@ -24,7 +34,7 @@ async function send_mail(to, subject, text){
             to: to,
             subject: subject,
             text: text
-        })
+        })      
     }catch(err){
         console.log(err)
     }
@@ -36,17 +46,41 @@ function generate_number(){
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const app = express()
-app.use(express.static("template"))
-app.use(express.json())
+const codes = new Map()
+async function  verify(email){
+    let number = generate_number()
+    codes.set(email, number)
+    let subject = "code verfication"
+    let text = ` the verfication code is ${number} you should enter it`
+
+    send_mail(email, subject, email)
+
+    return number 
+}
+
+app.post("/verify", (req, res) => {
+    const { email, code } = req.body
+
+    const savedCode = codes.get(email)
+
+    if (savedCode == code) {
+        codes.delete(email)
+
+        return res.json({
+            success: true,
+            message: "Verification successful."
+        })
+    }
+
+    res.json({
+        success: false,
+        message: "Wrong verification code."
+    })
+})
 
 mongo.connect(process.env.URI)
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log(err))
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "template", "main.html"))
-})
 
 app.post("/sign_in", async (req, res) => {
     const {email, password} = req.body
@@ -78,7 +112,7 @@ app.post("/sign_in", async (req, res) => {
     }
 })
 
-app.post("/sing_up", async (req, res) => {
+app.post("/sign_up", async (req, res) => {
     const {password, email, user_name} = req.body
 
     const exist = await User.findOne({email: email})
@@ -87,14 +121,27 @@ app.post("/sing_up", async (req, res) => {
             message: "a user with that email exist"
         })
     }
-
-    let random = generate_number()
-
     
+    const result = await verify(email)
+    
+    if(!result){
+        res.json({
+            success: false,
+            messgae: "fiald to send the code"
+        })
+    }else{
+        res.json({
+            success: true,
+            message: "code send successful",
+        })
+    }
 })
 
+app.post("/add_user", (req, res) => {
+
+})
 
 const port = process.env.PORT
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)
-});
+})

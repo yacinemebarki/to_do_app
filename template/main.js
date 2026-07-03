@@ -15,6 +15,15 @@ function showError(mes){
     })
 }
 
+function email_verfication(email){
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if(regex.test(email)){
+        return true
+    }else{
+        return false
+    }
+}
 
 function switch_from_to(hide, show){
     hide.classList.remove("fade-in");
@@ -46,6 +55,11 @@ in_btn.addEventListener("click", async () => {
         return;
     }
 
+    if(email_verfication(email) === false){
+        showError("invalid email")
+        return
+    }
+    
     const reponse = await fetch("/sign_in",{
         method: "POST",
         headers: {
@@ -73,6 +87,12 @@ up_btn.addEventListener("click", async () =>{
         showError("you should fill all fields")
         return;
     }
+
+    if(email_verfication(email) === false){
+        showError("invalid email")
+        return
+    }
+    
     if(password != repeat_password){
         showError("you should enter the same password")
         return
@@ -84,13 +104,16 @@ up_btn.addEventListener("click", async () =>{
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            password: password,
             email: email,
-            user_name: user_name
         })
     })
 
     const data = await response.json()
+    if(data.success === false){
+        showError(data.message)
+        return
+    }
+    window.location.href = 'ver.html'
 })
 
 
