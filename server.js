@@ -31,6 +31,7 @@ const transporter = mailer.createTransport({
     }
 })
 
+//sign up
 async function send_mail(to, subject, text) {
     try {
         await transporter.sendMail({
@@ -113,6 +114,36 @@ app.post("/verify", async (req, res) => {
 })
 
 
+app.post("/sign_up", async (req, res) => {
+    const { password, email, user_name } = req.body
+
+    const exist = await User.findOne({ email: email })
+    if (exist) {
+        return res.status(400).json({
+            message: "a user with that email exist",
+            success: false
+        })
+    }
+    sign_up_data.set(email, { password, user_name })
+
+    const result = await verify(email)
+
+    if (!result) {
+        sign_up_data.delete(email)
+        res.json({
+            success: false,
+            message: "failed to send the code"
+        })
+    } else {
+        res.json({
+            success: true,
+            message: "code send successful. Please verify your email.",
+            email: email
+        })
+    }
+})
+
+//sign in
 app.post("/sign_in", async (req, res) => {
     const { email, password } = req.body
     try {
@@ -143,32 +174,20 @@ app.post("/sign_in", async (req, res) => {
     }
 })
 
-app.post("/sign_up", async (req, res) => {
-    const { password, email, user_name } = req.body
+app.post("/user", async (req, res) => {
+    const {email} = req.body
 
-    const exist = await User.findOne({ email: email })
-    if (exist) {
-        return res.status(400).json({
-            message: "a user with that email exist",
-            success: false
-        })
-    }
-    sign_up_data.set(email, { password, user_name })
-
-    const result = await verify(email)
-
-    if (!result) {
-        sign_up_data.delete(email)
+    try {
+        const user = await User.findOne( { email: email })
+        const tasks = await Task.find({ user: user._id})
+        
         res.json({
-            success: false,
-            message: "failed to send the code"
+            user_name: user.user_name,
+            point: user.point,
+            task: tasks
         })
-    } else {
-        res.json({
-            success: true,
-            message: "code send successful. Please verify your email.",
-            email: email
-        })
+    }catch(err){
+        console.log(err)
     }
 })
 

@@ -5,6 +5,27 @@ const edit_btn = document.getElementById("edit-btn")
 const todo_list = document.getElementById("to-do-list")
 const today_list = document.getElementById("to-day-list")
 
+const email = localStorage.getItem("email");
+
+function build(){
+    const response = await fetch("/user", {
+        method: "POST",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({ email })
+    })
+
+    const data = await response.json()
+    const name = document.getElementById("name")
+    const score = document.getElementById("point")
+
+    name.innerText = data.user_name
+    score.innerText = data.point
+
+}
+
+
 const meeting = document.getElementById("meeting")
 function validTime(){
     const now = new Date()

@@ -25,7 +25,8 @@ btn.addEventListener("click", async () => {
         console.log(data.message)
         return
     }
-
+    
+    localStorage.setItem('email', email)
     window.location.href = `index.html`
 
 })
