@@ -71,10 +71,12 @@ in_btn.addEventListener("click", async () => {
         })
     })
     const data = await response.json()
-    showError(data.message)
-    if (data.success) {
-        window.location.href = "index.html"
+    if(data.success === false){
+        showError(data.message)
+        return
     }
+    localStorage.setItem("pendingEmail", email)
+    window.location.href = `ver.html`
 })
 
 up_btn.addEventListener("click", async () => {
@@ -116,7 +118,7 @@ up_btn.addEventListener("click", async () => {
         return
     }
 
-    localStorage.setItem('signupEmail', email)
+    localStorage.setItem('pendingEmail', email)
     window.location.href = `ver.html`
 })
 

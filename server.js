@@ -75,7 +75,14 @@ app.post("/verify", async (req, res) => {
         codes.delete(email)
         const userData = sign_up_data.get(email)
 
-        if (userData) {
+        if (!userData) {
+            return res.status(400).json({
+                success: false,
+                message: "No pending verification request for this email."
+            })
+        }
+
+        if (userData.type === "up") {
             try {
                 const hashedPassword = await bycrypt.hash(userData.password, 10)
                 const newUser = new User({
@@ -101,6 +108,41 @@ app.post("/verify", async (req, res) => {
             }
         }
 
+        if (userData.type === "in") {
+            try {
+                const user = await User.findOne({ email })
+                if (!user) {
+                    sign_up_data.delete(email)
+                    return res.status(400).json({
+                        success: false,
+                        message: "User does not exist."
+                    })
+                }
+
+                const passwordMatch = await bycrypt.compare(userData.password, user.password)
+                if (!passwordMatch) {
+                    sign_up_data.delete(email)
+                    return res.status(400).json({
+                        success: false,
+                        message: "Incorrect password or email"
+                    })
+                }
+
+                sign_up_data.delete(email)
+                return res.json({
+                    success: true,
+                    message: "Verification successful."
+                })
+            } catch (err) {
+                console.log(err)
+                sign_up_data.delete(email)
+                return res.status(500).json({
+                    success: false,
+                    message: "Error verifying sign in."
+                })
+            }
+        }
+
         return res.json({
             success: true,
             message: "Verification successful."
@@ -111,7 +153,8 @@ app.post("/verify", async (req, res) => {
         success: false,
         message: "Wrong verification code."
     })
-})
+}) 
+
 
 
 app.post("/sign_up", async (req, res) => {
@@ -124,7 +167,8 @@ app.post("/sign_up", async (req, res) => {
             success: false
         })
     }
-    sign_up_data.set(email, { password, user_name })
+    const type = "up"
+    sign_up_data.set(email, { password, user_name , type})
 
     const result = await verify(email)
 
@@ -145,34 +189,35 @@ app.post("/sign_up", async (req, res) => {
 
 //sign in
 app.post("/sign_in", async (req, res) => {
-    const { email, password } = req.body
-    try {
-        const user = await User.findOne({ email: email })
+    const { password, email } = req.body
 
-        if (!user) {
-            return res.status(401).json({
-                message: "Invalid email or password"
-            });
-        }
-        const match = await bycrypt.compare(password, user.password)
+    const exist = await User.findOne({ email: email })
+    if (!exist) {
+        return res.status(400).json({
+            message: "you must sign up first",
+            success: false
+        })
+    }
+    const type = "in"
+    sign_up_data.set(email, {password, type})
 
-        if (!match) {
-            return res.status(401).json({
-                message: "Invalid email or passsword"
-            })
-        }
+    const result = await verify(email)
 
+    if (!result) {
+        sign_up_data.delete(email)
+        res.json({
+            success: false,
+            message: "failed to send the code"
+        })
+    } else {
         res.json({
             success: true,
-            message: "login successful"
-        })
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            message: "server error"
+            message: "code send successful. Please verify your email.",
+            email: email
         })
     }
 })
+
 
 app.post("/user", async (req, res) => {
     const {email} = req.body
