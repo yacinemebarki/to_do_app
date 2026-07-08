@@ -20,7 +20,6 @@ const task_schema = new mongo.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
     }
 }, {
     timestamps: true

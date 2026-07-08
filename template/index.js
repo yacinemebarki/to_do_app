@@ -38,7 +38,7 @@ async function build() {
         task_div.innerHTML = `
             <div class="his-title" id="his-title">${task.title}</div>
             <div class="his-time" id="his-time">${task.time}</div>
-            <div class="his-des" id="his-des">${task.des}</div>
+            <div class="his-des" id="his-des">${task.description}</div>
             <div class="status" id="status" style="background-color:${task.status ? "#d4edda" : "#571515"}">
                 ${task.status ? "did" : "not did"}
             </div>
@@ -80,7 +80,7 @@ function showError(mes) {
     })
 }
 
-save_btn.addEventListener("click",async () => {
+save_btn.addEventListener("click", async () => {
     validTime()
 
     var title = document.getElementById("task-title").value.trim()
@@ -96,15 +96,10 @@ save_btn.addEventListener("click",async () => {
     const minTime = new Date();
     minTime.setHours(minTime.getHours() + 2);
 
-    if (selectedTime < minTime) {
-        showError("The meeting must be at least 2 hours from now.");
-        return;
-    }
+    var task_div = document.createElement("div")
+    task_div.className = "info"
 
-    const task = document.createElement("div")
-    task.className = "info"
-
-    task.innerHTML = `
+    task_div.innerHTML = `
         <div class="his-title" id="his-title">${title}</div>
         <div class="his-time" id="his-time">${time}</div>
         <div class="his-des" id="his-des">${des}</div>
@@ -112,16 +107,17 @@ save_btn.addEventListener("click",async () => {
             ${status ? "did" : "not did"}
         </div>
     `
-    todo_list.insertBefore(task, frame)
     if (selectedTime < minTime) {
         past_list.appendChild(task_div.cloneNode(true))
     }
     else if (selectedTime.getFullYear() === minTime.getFullYear() && selectedTime.getMonth() === minTime.getMonth() && selectedTime.getDate() === minTime.getDate()) {
-        today_list.appendChild(task.cloneNode(true))
+        today_list.appendChild(task_div.cloneNode(true))
+    }
+    else {
+        todo_list.append(task_div, cloneNode(true))
     }
 
     frame.style.display = "none"
-
     const response = await fetch("/add_task", {
         method: "POST",
         headers: {
