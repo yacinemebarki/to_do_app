@@ -13,14 +13,14 @@ const task_schema = new mongo.Schema({
         type: String,
         required: true
     },
-    stauts: {
+    status: {
         type: Boolean,
         required: true
     },
-    user: {
-        type: mongo.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+    email: {
+        type: String,
+        required: true,
+        unique: true
     }
 }, {
     timestamps: true

@@ -224,12 +224,33 @@ app.post("/user", async (req, res) => {
 
     try {
         const user = await User.findOne( { email: email })
-        const tasks = await Task.find({ user: user._id})
-        
+        const tasks = await Task.find({ email: email})
+        console.log(user.user_name)        
         res.json({
             user_name: user.user_name,
             point: user.point,
             task: tasks
+        })
+    }catch(err){
+        console.log(err)
+    }
+})
+
+app.post("/add_task", async(req, res) => {
+    const {email, time, title, des, status} = req.body
+
+    try{
+        const task = new Task({
+            title: title,
+            description: des,
+            time: time,
+            status: status,
+            email: email                      
+        })
+        await task.save()
+        return res.json({
+            success: true,
+            message: "task add success"
         })
     }catch(err){
         console.log(err)
