@@ -252,6 +252,7 @@ app.post("/add_task", async(req, res) => {
             success: true,
             message: "task add success"
         })
+        console.log("task add success")
     }catch(err){
         console.log(err)
     }

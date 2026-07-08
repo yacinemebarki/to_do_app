@@ -121,7 +121,6 @@ save_btn.addEventListener("click",async () => {
     }
 
     frame.style.display = "none"
-    task = null
 
     const response = await fetch("/add_task", {
         method: "POST",
