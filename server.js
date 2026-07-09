@@ -294,7 +294,6 @@ app.post("/remove_task", async(req, res) => {
     }
 })
 
-const port = process.env.PORT
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)
 })
