@@ -189,31 +189,33 @@ app.post("/sign_up", async (req, res) => {
 
 //sign in
 app.post("/sign_in", async (req, res) => {
-    const { password, email } = req.body
+    try {
+        const { password, email } = req.body
 
-    const exist = await User.findOne({ email: email })
-    if (!exist) {
-        return res.status(400).json({
-            message: "you must sign up first",
-            success: false
-        })
-    }
-    const type = "in"
-    sign_up_data.set(email, {password, type})
+        const exist = await User.findOne({ email })
 
-    const result = await verify(email)
+        if (!exist) {
+            return res.status(400).json({
+                success: false,
+                message: "You must sign up first"
+            });
+        }
 
-    if (!result) {
-        sign_up_data.delete(email)
-        res.json({
-            success: false,
-            message: "failed to send the code"
-        })
-    } else {
+        sign_up_data.set(email, { password, type: "in" })
+
+        const result = await verify(email);
+
         res.json({
             success: true,
-            message: "code send successful. Please verify your email.",
-            email: email
+            message: "Code sent successfully",
+            email
+        });
+
+    } catch (err) {
+        console.error("SIGN_IN ERROR:", err)
+        res.status(500).json({
+            success: false,
+            error: err.message
         })
     }
 })
