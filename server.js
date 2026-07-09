@@ -10,7 +10,8 @@ const User = require("./model/user")
 const Task = require("./model/task")
 
 const app = express()
-app.use(express.static("public", {
+mongo.set('bufferCommands', false)
+app.use(express.static(path.join(__dirname, "public"), {
     index: false
 }))
 app.use(express.json())
@@ -19,9 +20,17 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "main.html"))
 })
 
+const port = process.env.PORT || 3000
 mongo.connect(process.env.URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err))
+    .then(() => {
+        console.log("MongoDB Connected")
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`)
+        })
+    })
+    .catch(err => {
+        console.error("MongoDB connection error:", err)
+    })
 
 const transporter = mailer.createTransport({
     service: "gmail",
