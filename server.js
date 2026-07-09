@@ -10,7 +10,7 @@ const User = require("./model/user")
 const Task = require("./model/task")
 
 const app = express()
-app.use(express.static("template", {
+app.use(express.static("public", {
     index: false
 }))
 app.use(express.json())
