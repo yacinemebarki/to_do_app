@@ -76,7 +76,7 @@ async function verify(email) {
 
 app.post("/verify", async (req, res) => {
     const { email, code } = req.body
-    
+
     const savedCode = codes.get(email)
     const parsedCode = parseInt(code)
 
@@ -162,7 +162,7 @@ app.post("/verify", async (req, res) => {
         success: false,
         message: "Wrong verification code."
     })
-}) 
+})
 
 
 
@@ -177,7 +177,7 @@ app.post("/sign_up", async (req, res) => {
         })
     }
     const type = "up"
-    sign_up_data.set(email, { password, user_name , type})
+    sign_up_data.set(email, { password, user_name, type })
 
     const result = await verify(email)
 
@@ -231,28 +231,28 @@ app.post("/sign_in", async (req, res) => {
 
 
 app.post("/user", async (req, res) => {
-    const {email} = req.body
+    const { email } = req.body
 
     try {
-        const user = await User.findOne( { email: email })
-        const tasks = await Task.find({ email: email})
-        console.log(user.user_name)        
+        const user = await User.findOne({ email: email })
+        const tasks = await Task.find({ email: email })
+        console.log(user.user_name)
         res.json({
             user_name: user.user_name,
             point: user.point,
             task: tasks
         })
-    }catch(err){
+    } catch (err) {
         console.log(err)
     }
 })
 
-app.post("/add_task", async(req, res) => {
-    const {email, time, title, des, status} = req.body
+app.post("/add_task", async (req, res) => {
+    const { email, time, title, des, status } = req.body
 
-    try{
-        const exist = await Task.findOne({email: email, title: title, time: time})
-        if(exist){
+    try {
+        const exist = await Task.findOne({ email: email, title: title, time: time })
+        if (exist) {
             res.json({
                 success: false,
                 message: "this task exist"
@@ -263,7 +263,7 @@ app.post("/add_task", async(req, res) => {
             description: des,
             time: time,
             status: status,
-            email: email                      
+            email: email
         })
         await task.save()
         return res.json({
@@ -271,14 +271,14 @@ app.post("/add_task", async(req, res) => {
             message: "task add success"
         })
         console.log("task add success")
-    }catch(err){
+    } catch (err) {
         console.log(err)
     }
 })
 
-app.post("/remove_task", async(req, res) => {
-    const {email, title, time} = req.body
-    try{
+app.post("/remove_task", async (req, res) => {
+    const { email, title, time } = req.body
+    try {
         await Task.deleteOne({
             email: email,
             title: title,
@@ -289,11 +289,7 @@ app.post("/remove_task", async(req, res) => {
             message: "task removed success"
         })
         console.log("deleted")
-    }catch(err){
+    } catch (err) {
         console.log(err)
     }
-})
-
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`)
 })
