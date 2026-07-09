@@ -70,8 +70,23 @@ in_btn.addEventListener("click", async () => {
             password
         })
     })
-    const data = await response.json()
-    if(data.success === false){
+
+    if (!response.ok) {
+        const text = await response.text()
+        showError(`Server error ${response.status}: ${text}`)
+        return
+    }
+
+    let data
+    try {
+        data = await response.json()
+    } catch (err) {
+        const text = await response.text()
+        showError(`Invalid server response: ${text}`)
+        return
+    }
+
+    if (data.success === false) {
         showError(data.message)
         return
     }
