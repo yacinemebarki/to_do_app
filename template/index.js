@@ -8,6 +8,29 @@ const past_list = document.getElementById("time-end")
 
 const email = localStorage.getItem("email");
 
+var delete_title = " "
+var delete_time = " "
+
+function isSameDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear()
+        && dateA.getMonth() === dateB.getMonth()
+        && dateA.getDate() === dateB.getDate()
+}
+
+function createTaskCard(title, time, description, status) {
+    const task_div = document.createElement("div")
+    task_div.className = "info"
+    task_div.innerHTML = `
+        <div class="his-title">${title}</div>
+        <div class="his-time">${time}</div>
+        <div class="his-des">${description}</div>
+        <div class="status" style="background-color:${status ? "#d4edda" : "#571515"}">
+            ${status ? "did" : "not did"}
+        </div>
+    `
+    return task_div
+}
+
 async function build() {
     showError("called")
     const response = await fetch("/user", {
@@ -29,30 +52,20 @@ async function build() {
     const tasks = data.task
     for (const task of tasks) {
         const selectedTime = new Date(task.time)
-        const minTime = new Date();
-        minTime.setHours(minTime.getHours() + 2);
+        const now = new Date()
+        const task_div = createTaskCard(task.title, task.time, task.description, task.status)
 
-        const task_div = document.createElement("div")
-        task_div.className = "info"
-
-        task_div.innerHTML = `
-            <div class="his-title" id="his-title">${task.title}</div>
-            <div class="his-time" id="his-time">${task.time}</div>
-            <div class="his-des" id="his-des">${task.description}</div>
-            <div class="status" id="status" style="background-color:${task.status ? "#d4edda" : "#571515"}">
-                ${task.status ? "did" : "not did"}
-            </div>
-        `
-        todo_list.insertBefore(task_div, frame)
-
-        if (selectedTime < minTime) {
-            past_list.appendChild(task_div.cloneNode(true))
-        } else if (selectedTime.getFullYear() === minTime.getFullYear() && selectedTime.getMonth() === minTime.getMonth() && selectedTime.getDate() === minTime.getDate()) {
+        if (selectedTime < now) {
+            past_list.appendChild(task_div)
+        } else if (isSameDay(selectedTime, now)) {
             today_list.appendChild(task_div.cloneNode(true))
+            todo_list.insertBefore(task_div, frame)
+        } else {
+            todo_list.insertBefore(task_div, frame)
         }
-
-        frame.style.display = "none"
     }
+
+    frame.style.display = "none"
 }
 build()
 
@@ -81,6 +94,8 @@ function showError(mes) {
 }
 
 save_btn.addEventListener("click", async () => {
+    delete_time = " "
+    delete_title = " "
     validTime()
 
     var title = document.getElementById("task-title").value.trim()
@@ -93,77 +108,82 @@ save_btn.addEventListener("click", async () => {
     }
 
     const selectedTime = new Date(time)
-    const minTime = new Date();
-    minTime.setHours(minTime.getHours() + 2);
-
-    var task_div = document.createElement("div")
-    task_div.className = "info"
-
-    task_div.innerHTML = `
-        <div class="his-title" id="his-title">${title}</div>
-        <div class="his-time" id="his-time">${time}</div>
-        <div class="his-des" id="his-des">${des}</div>
-        <div class="status" id="status" style="background-color:${status ? "#d4edda" : "#571515"}">
-            ${status ? "did" : "not did"}
-        </div>
-    `
-    if (selectedTime < minTime) {
-        past_list.appendChild(task_div.cloneNode(true))
-    }
-    else if (selectedTime.getFullYear() === minTime.getFullYear() && selectedTime.getMonth() === minTime.getMonth() && selectedTime.getDate() === minTime.getDate()) {
-        today_list.appendChild(task_div.cloneNode(true))
-    }
-    else {
-        todo_list.append(task_div, cloneNode(true))
-    }
+    const now = new Date()
+    const task_div = createTaskCard(title, time, des, status)
 
     frame.style.display = "none"
-    const response = await fetch("/add_task", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: email,
-            time: time,
-            title: title,
-            des: des,
-            status: status
+    try {
+        const response = await fetch("/add_task", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                time: time,
+                title: title,
+                des: des,
+                status: status
+            })
         })
 
-    })
-
-    const data = await response.json()
-    if (data.success === true) {
-        showError(data.message)
-    }
-    else {
-        showError("cant add this task");
+        const data = await response.json()
+        if (data.success === true) {
+            if (selectedTime < now) {
+                past_list.appendChild(task_div)
+            } else if (isSameDay(selectedTime, now)) {
+                today_list.appendChild(task_div.cloneNode(true))
+                todo_list.appendChild(task_div)
+            } else {
+                todo_list.appendChild(task_div)
+            }
+            showError(data.message)
+        } else {
+            showError(data.message || "cant add this task")
+        }
+    } catch (error) {
+        showError("Server error: could not add task")
     }
 })
 
 todo_list.addEventListener("click", (e) => {
     const editingTask = e.target.closest(".info");
 
-    if (!editingTask) return;
+    if (!editingTask) return
 
-    const time = editingTask.querySelector(".his-time").innerText;
+    const time = editingTask.querySelector(".his-time").innerText
+    delete_time = time
 
-    document.getElementById("task-title").value = editingTask.querySelector(".his-title").innerText;
-    document.getElementById("description").value = editingTask.querySelector(".his-des").innerText;
+    delete_title = document.getElementById("task-title").value = editingTask.querySelector(".his-title").innerText
+    document.getElementById("description").value = editingTask.querySelector(".his-des").innerText
     document.getElementById("meeting").value = time
-    document.getElementById("check").checked = editingTask.querySelector(".status").innerText === "did";
+    document.getElementById("check").checked = editingTask.querySelector(".status").innerText === "did"
 
-    frame.style.display = "block";
+    frame.style.display = "block"
     document.querySelectorAll(".info").forEach(task => {
         if (task.querySelector(".his-time").innerText === time) {
-            task.remove();
+            task.remove()
         }
     })
 })
 
 const remove_btn = document.getElementById("remove-btn")
 
-remove_btn.addEventListener("click", () => {
+remove_btn.addEventListener("click", async () => {
     frame.style.display = "none"
+
+    const response = await fetch("/remove_task", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            title: delete_title,
+            time: delete_time
+        })
+    })
+
+    const data = await response.json()
+
 })

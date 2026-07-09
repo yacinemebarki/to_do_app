@@ -240,6 +240,13 @@ app.post("/add_task", async(req, res) => {
     const {email, time, title, des, status} = req.body
 
     try{
+        const exist = await Task.findOne({email: email, title: title, time: time})
+        if(exist){
+            res.json({
+                success: false,
+                message: "this task exist"
+            })
+        }
         const task = new Task({
             title: title,
             description: des,
@@ -253,6 +260,24 @@ app.post("/add_task", async(req, res) => {
             message: "task add success"
         })
         console.log("task add success")
+    }catch(err){
+        console.log(err)
+    }
+})
+
+app.post("/remove_task", async(req, res) => {
+    const {email, title, time} = req.body
+    try{
+        await Task.deleteOne({
+            email: email,
+            title: title,
+            time: time
+        })
+        return res.json({
+            success: true,
+            message: "task removed success"
+        })
+        console.log("deleted")
     }catch(err){
         console.log(err)
     }
