@@ -16,21 +16,47 @@ app.use(express.static(path.join(__dirname, "public"), {
 }))
 app.use(express.json())
 
+app.use(async (req, res, next) => {
+    try {
+        await connectDatabase()
+        next()
+    } catch (err) {
+        console.error("MongoDB connection error:", err)
+        res.status(500).json({
+            success: false,
+            message: "Database unavailable"
+        })
+    }
+})
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "main.html"))
 })
 
-const port = process.env.PORT || 3000
-mongo.connect(process.env.URI)
-    .then(() => {
-        console.log("MongoDB Connected")
-        app.listen(port, () => {
-            console.log(`Server running on port ${port}`)
-        })
-    })
-    .catch(err => {
-        console.error("MongoDB connection error:", err)
-    })
+let mongoConnectionPromise
+
+async function connectDatabase() {
+    if (mongo.connection.readyState === 1) {
+        return
+    }
+
+    if (!process.env.URI) {
+        throw new Error("Missing URI environment variable")
+    }
+
+    if (!mongoConnectionPromise) {
+        mongoConnectionPromise = mongo.connect(process.env.URI)
+            .then(() => {
+                console.log("MongoDB Connected")
+            })
+            .catch(err => {
+                mongoConnectionPromise = undefined
+                throw err
+            })
+    }
+
+    await mongoConnectionPromise
+}
 
 const transporter = mailer.createTransport({
     service: "gmail",
@@ -293,3 +319,12 @@ app.post("/remove_task", async (req, res) => {
         console.log(err)
     }
 })
+
+if (require.main === module) {
+    const port = process.env.PORT || 3000
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`)
+    })
+}
+
+module.exports = app
