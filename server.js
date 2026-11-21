@@ -16,6 +16,10 @@ app.use(express.static(path.join(__dirname, "public"), {
 }))
 app.use(express.json())
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "main.html"))
+})
+
 app.use(async (req, res, next) => {
     try {
         await connectDatabase()
@@ -29,9 +33,7 @@ app.use(async (req, res, next) => {
     }
 })
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "main.html"))
-})
+
 
 let mongoConnectionPromise
 
